@@ -1,0 +1,46 @@
+﻿@inject IDatabaseService DatabaseService
+@page "/mealList"
+@rendermode InteractiveServer
+
+<div class="d-flex flex-wrap">
+@foreach (Meal meal in meals)
+{
+    <Card Style="width:18rem;">
+        <CardBody>
+            <CardTitle>@meal.Name</CardTitle>
+        </CardBody>
+            <Image Src="@meal.ImageUrl" IsThumbnail="true" Alt="placeholder" class="rounded-top" Style="width: 100%; height: 11vw; object-fit: cover;" />
+    </Card>
+}
+</div>
+
+
+@code {
+    private IEnumerable<Meal> meals = new List<Meal>();
+
+    private HashSet<Meal> selectedMeals = new();
+
+    private async Task<GridDataProviderResult<Meal>> MealsDataProvider(GridDataProviderRequest<Meal> request)
+    {
+        if (meals is null)
+            meals = GetMeals();
+
+        return await Task.FromResult(request.ApplyTo(meals));
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        meals = GetMeals();
+    }
+
+    private IEnumerable<Meal> GetMeals()
+    {
+        return DatabaseService.GetAllMealsAsync().Result;
+    }
+
+    private Task OnSelectedItemsChanged(HashSet<Meal> meals)
+    {
+        selectedMeals = meals is not null && meals.Any() ? meals : new();
+        return Task.CompletedTask;
+    }
+}

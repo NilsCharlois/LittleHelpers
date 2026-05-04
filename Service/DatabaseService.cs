@@ -1,7 +1,7 @@
 ﻿using LittleHelpers.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace LittleHelpers.Data
+namespace LittleHelpers.Service
 {
     public class DatabaseService : IDatabaseService
     {
@@ -13,7 +13,7 @@ namespace LittleHelpers.Data
 
         public Task<List<Meal>> GetAllMealsAsync()
         {
-            return context.Meals.ToListAsync();
+            return context.Meals.Include(m=>m.MealIngredients).Include("MealIngredients.Ingredient").ToListAsync();
         }
         
         public Task<List<Ingredient>> GetAllIngredientsAsync()

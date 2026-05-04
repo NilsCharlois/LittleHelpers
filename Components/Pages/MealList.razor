@@ -1,16 +1,20 @@
 ﻿@inject IDatabaseService DatabaseService
 @page "/mealList"
+@using LittleHelpers.Service
 @rendermode InteractiveServer
 
-<div class="d-flex flex-wrap">
+<div style="display:flex ; flex-flow:row wrap">
 @foreach (Meal meal in meals)
 {
-    <Card Style="width:18rem;">
-        <CardBody>
-            <CardTitle>@meal.Name</CardTitle>
-        </CardBody>
-            <Image Src="@meal.ImageUrl" IsThumbnail="true" Alt="placeholder" class="rounded-top" Style="width: 100%; height: 11vw; object-fit: cover;" />
-    </Card>
+    <div class="col-sm-4 col-md-3 col-xs-6">
+            <BlazorBootstrap.Card>
+                <BlazorBootstrap.CardBody>
+                    <BlazorBootstrap.CardTitle>@meal.Name</BlazorBootstrap.CardTitle>
+                </BlazorBootstrap.CardBody>
+                <BlazorBootstrap.Image Src="@meal.ImageUrl" IsThumbnail="true" Alt="placeholder" class="rounded-top" Style="width: 100%; height: 11vw; object-fit: cover;" />
+            </BlazorBootstrap.Card>
+    </div>
+        
 }
 </div>
 
@@ -20,7 +24,7 @@
 
     private HashSet<Meal> selectedMeals = new();
 
-    private async Task<GridDataProviderResult<Meal>> MealsDataProvider(GridDataProviderRequest<Meal> request)
+    private async Task<BlazorBootstrap.GridDataProviderResult<Meal>> MealsDataProvider(BlazorBootstrap.GridDataProviderRequest<Meal> request)
     {
         if (meals is null)
             meals = GetMeals();

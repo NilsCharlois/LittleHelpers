@@ -1,19 +1,31 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+
+    <!-- Top bar -->
+    <MudAppBar Elevation="1">
+        <MudText Typo="Typo.h6">Image App</MudText>
+
+        <MudSpacer />
+
+        <MudButton Variant="Variant.Text" Href="/">Home</MudButton>
+        <MudButton Variant="Variant.Text" Href="/gallery">Gallery</MudButton>
+        <MudButton Variant="Variant.Text" Href="/mealList">Meal List</MudButton>
+    </MudAppBar>
+
+    <!-- Main content -->
+    <MudMainContent Class="pa-4 mt-16">
+        @Body
+    </MudMainContent>
+
+    <div id="blazor-error-ui" data-nosnippet>
+        An unhandled error has occurred.
+        <a href="." class="reload">Reload</a>
+        <span class="dismiss">🗙</span>
     </div>
+</MudLayout>
 
-    <main>
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
-
-<div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
-</div>

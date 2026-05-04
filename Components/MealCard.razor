@@ -1,0 +1,22 @@
+﻿@using LittleHelpers.Models
+@rendermode InteractiveServer
+
+<MudCard Style="cursor:pointer" @onclick="HandleClick">
+
+    <MudCardMedia Image="@meal.ImageUrl" Height="140" Width="200" />
+
+    <MudCardContent>
+        <MudText Typo="Typo.subtitle2">@meal.Name</MudText>
+    </MudCardContent>
+
+</MudCard>
+
+@code {
+    [Parameter] public Meal meal { get; set; } = default!;
+    [Parameter] public EventCallback<Meal> OnClick { get; set; }
+
+    private async Task HandleClick()
+    {
+        await OnClick.InvokeAsync(meal);
+    }
+}

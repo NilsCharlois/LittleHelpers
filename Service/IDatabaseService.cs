@@ -1,6 +1,6 @@
 ﻿using LittleHelpers.Models;
 
-namespace LittleHelpers.Data
+namespace LittleHelpers.Service
 {
     public interface IDatabaseService
     {

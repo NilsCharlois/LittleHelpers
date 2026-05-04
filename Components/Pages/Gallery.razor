@@ -1,0 +1,55 @@
+﻿@page "/gallery"
+@using LittleHelpers.Service
+@rendermode InteractiveServer
+@inject IDatabaseService DatabaseService
+
+<MudText Typo="Typo.h5" Class="mb-4">Gallery</MudText>
+
+<MudGrid>
+    @foreach (var item in Meals)
+    {
+        <MudItem xs="6" sm="4" md="3">
+             <MealCard meal="item" OnClick="@OpenDrawer" />
+            </MudItem>
+    }
+</MudGrid>
+
+
+<DetailsDrawer Open="@_drawerOpen"
+               meal="SelectedMeal"
+               OnClose="CloseDrawer" />
+
+@code {
+
+    List<Meal> Meals = [];
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await Task.Run(() => { _drawerOpen = false; });
+    }
+
+    protected override void OnInitialized()
+    {
+        Meals = DatabaseService.GetAllMealsAsync().Result;
+    }
+
+    bool _drawerOpen;
+    Meal? SelectedMeal;
+
+    void HandleClickMealCard(Meal meal)
+    {
+        SelectedMeal = meal;
+        _drawerOpen = true;        
+    }
+
+    void OpenDrawer(Meal meal)
+    {
+        SelectedMeal = meal;
+        _drawerOpen = true;
+    }
+
+    void CloseDrawer()
+    {
+        _drawerOpen = false;
+    }
+}

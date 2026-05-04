@@ -1,0 +1,51 @@
+﻿@using LittleHelpers.Models
+
+<MudDrawer Anchor="Anchor.Right"
+           Open="@Open"
+           Elevation="2"
+           Variant="DrawerVariant.Temporary"
+           Width="300px" OverlayAutoClose="true" OpenChanged="Close">
+
+    @if (meal != null)
+    {
+        <MudPaper Class="pa-4">
+
+            <MudText Typo="Typo.h6">@meal.Name</MudText>
+
+            <MudDivider Class="my-2" />
+
+            <MudText>Description: @meal.Description</MudText>
+
+            @if(meal.MealIngredients.Count > 0)
+            {
+                <MudText>Ingredients:</MudText>
+                <MudList T="string">
+                    @foreach(MealIngredients mealIngredient in meal.MealIngredients)
+                    {
+                        <MudItem>@mealIngredient.Ingredient.Name (qty: @mealIngredient.Quantity)</MudItem>
+                    }
+                </MudList>
+            }
+
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Class="mt-4"
+                       OnClick="Close">
+                Close
+            </MudButton>
+
+        </MudPaper>
+    }
+
+</MudDrawer>
+
+@code {
+    [Parameter] public bool Open { get; set; }
+    [Parameter] public Meal? meal { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private async Task Close()
+    {
+        await OnClose.InvokeAsync();
+    }
+}

@@ -1,6 +1,7 @@
 using LittleHelpers.Components;
-using LittleHelpers.Data;
+using LittleHelpers.Service;
 using Microsoft.EntityFrameworkCore;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +14,8 @@ var connectionString = builder.Configuration.GetConnectionString("LittleHelpers"
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddDbContext<LittleHelpers.Models.AppContext>(options => options.UseSqlite(connectionString).EnableDetailedErrors(), ServiceLifetime.Transient);
-builder.Services.AddBlazorBootstrap();
+//builder.Services.AddBlazorBootstrap();
+builder.Services.AddMudServices();
 builder.Services.AddScoped<IDatabaseService, DatabaseService>();
 
 

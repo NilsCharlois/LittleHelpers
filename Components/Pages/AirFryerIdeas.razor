@@ -1,25 +1,26 @@
 @inject IDatabaseService DatabaseService
 @page "/airFryer"
+@using LittleHelpers.Service
 @rendermode InteractiveServer
 
-<Offcanvas @ref="offcanvas"  Size="OffcanvasSize.Small"/>
+<BlazorBootstrap.Offcanvas @ref="offcanvas" Size="BlazorBootstrap.OffcanvasSize.Small" />
 
 <div class="d-flex flex-wrap">
 @foreach (Meal meal in meals)
 {
-    <Card Style="width:18rem;">
+        <BlazorBootstrap.Card Style="width:18rem;">
         <!-- <CardBody>
             <CardTitle>@meal.Name</CardTitle>
         </CardBody> -->
-            <Image Src="@meal.ImageUrl" IsThumbnail="true" Alt="placeholder" class="rounded-top" Style="width: 100%; height: 11vw; object-fit: cover;" />
-            <Button class="btn btn-primary" @onclick="() => ShowDetails(meal.Id)">View Details</Button>
-    </Card>
+            <BlazorBootstrap.Image Src="@meal.ImageUrl" IsThumbnail="true" Alt="placeholder" class="rounded-top" Style="width: 100%; height: 11vw; object-fit: cover;" />
+            <BlazorBootstrap.Button class="btn btn-primary" @onclick="() => ShowDetails(meal.Id)">View Details</BlazorBootstrap.Button>
+    </BlazorBootstrap.Card>
 }
 </div>
 
 
 @code {
-    private Offcanvas offcanvas = default!;
+    private BlazorBootstrap.Offcanvas offcanvas = default!;
     private IEnumerable<Meal> meals = new List<Meal>();
     private HashSet<Meal> selectedMeals = new();
 
@@ -30,7 +31,7 @@
         await offcanvas.ShowAsync<AirFryerDetail>(title: "Details", parameters: parameters);
     }
 
-    private async Task<GridDataProviderResult<Meal>> MealsDataProvider(GridDataProviderRequest<Meal> request)
+    private async Task<BlazorBootstrap.GridDataProviderResult<Meal>> MealsDataProvider(BlazorBootstrap.GridDataProviderRequest<Meal> request)
     {
         if (meals is null)
             meals = GetMeals();

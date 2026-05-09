@@ -1,20 +1,18 @@
 ﻿@inherits LayoutComponentBase
+@inject MudBlazor.IDialogService DialogService
 
 <MudThemeProvider />
-<MudDialogProvider />
 <MudSnackbarProvider />
 
 <MudLayout>
 
     <!-- Top bar -->
     <MudAppBar Elevation="1">
-        <MudText Typo="Typo.h6">Image App</MudText>
+        <MudText Typo="Typo.h6">Little Helpers</MudText>
 
         <MudSpacer />
 
-        <MudButton Variant="Variant.Text" Href="/">Home</MudButton>
         <MudButton Variant="Variant.Text" Href="/gallery">Gallery</MudButton>
-        <MudButton Variant="Variant.Text" Href="/mealList">Meal List</MudButton>
     </MudAppBar>
 
     <!-- Main content -->
@@ -28,4 +26,3 @@
         <span class="dismiss">🗙</span>
     </div>
 </MudLayout>
-

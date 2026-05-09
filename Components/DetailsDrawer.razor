@@ -26,6 +26,12 @@
                     }
                 </MudList>
             }
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Class="mt-4 mr-2"
+                       OnClick="@(() => OnEdit.InvokeAsync(meal))">
+                Edit
+            </MudButton>
 
             <MudButton Variant="Variant.Filled"
                        Color="Color.Primary"
@@ -42,6 +48,7 @@
 @code {
     [Parameter] public bool Open { get; set; }
     [Parameter] public Meal? meal { get; set; }
+    [Parameter] public EventCallback<Meal> OnEdit { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
 
     private async Task Close()

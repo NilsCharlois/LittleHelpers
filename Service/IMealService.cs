@@ -2,12 +2,12 @@
 
 namespace LittleHelpers.Service
 {
-    public interface IDatabaseService
+    public interface IMealService
     {
-        void Add(Meal meal);
         Task<Meal> CreateMealAsync(Meal item, Stream fileStream, string extension);
-        void Update(Meal meal);
+        //void Update(Meal meal);
+        void Update(Meal meal, Stream? newFileStream = null, string? extension = null);
+        void Delete(Meal meal);
         Task<List<Meal>> GetAllMealsAsync();
-        Task<List<Ingredient>> GetAllIngredientsAsync();
     }
 }

@@ -1,0 +1,35 @@
+﻿@page "/ingredients"
+
+@using LittleHelpers.Models
+@using LittleHelpers.Service
+
+@inject IIngredientService IngredientService
+
+<MudText Typo="Typo.h5" Class="mb-4">
+    Ingredients
+</MudText>
+
+<MudPaper Class="pa-4">
+
+    <MudTable Items="_ingredients">
+
+        <HeaderContent>
+            <MudTh>Name</MudTh>
+        </HeaderContent>
+
+        <RowTemplate>
+            <MudTd>@context.Name</MudTd>
+        </RowTemplate>
+
+    </MudTable>
+
+</MudPaper>
+
+@code {
+    private List<Ingredient> _ingredients = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _ingredients = await IngredientService.GetAll();
+    }
+}

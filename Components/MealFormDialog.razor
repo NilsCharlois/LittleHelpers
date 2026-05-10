@@ -2,21 +2,26 @@
 @inject MudBlazor.IDialogService DialogService
 @rendermode InteractiveServer
 
+<MudPopoverProvider />
+
 <MudDialog>
     <DialogContent>
-
-        <MudText Typo="Typo.h6">Create Meal</MudText>
-
-        <MudTextField Label="Title" @bind-Value="Model.Name" Required="true" />
-        <MudTextField Label="Image URL" @bind-Value="Model.ImageUrl" Required="true" />
+        <MudText Typo="Typo.subtitle2" Class="fw-bold">Meal Name</MudText>
+        <MudTextField Label="Name" @bind-Value="Model.Name" Required="true" />
+        <MudText Typo="Typo.subtitle2" Class="fw-bold">Description</MudText>
         <MudTextField Label="Description" @bind-Value="Model.Description" Lines="3" />
-        <MudBooleanInput Label="AirFryer Recipe?" @bind-Value="Model.IsAirFryer" />
+        <MudText Typo="Typo.subtitle2" Class="fw-bold">Uses Air Fryer</MudText>
+        <MudCheckBox @bind-Value="Model.IsAirFryer" Label="Air Fryer" Color="Color.Primary"></MudCheckBox>
+        <MudText Typo="Typo.subtitle2" Class="fw-bold">Ingredient List</MudText>
+        <IngredientEditor MealIngredients="Model.MealIngredients" />
+        <MudText Typo="Typo.subtitle2" Class="fw-bold">Image</MudText>
         <InputFile OnChange="OnFileSelected" />
 
         @if (_fileName != null)
         {
             <MudText Typo="Typo.caption">@_fileName</MudText>
         }
+
 
     </DialogContent>
 

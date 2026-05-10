@@ -3,7 +3,7 @@
 
 <MudCard Style="cursor:pointer" @onclick="HandleClick">
 
-    <MudCardMedia Image="@meal.ImageUrl" Height="140" Width="200" />
+    <MudCardMedia Image="@String.Join('/', new string[] { "Images", meal.ImageName })" Height="140" Width="200" />
 
     <MudCardContent>
         <MudText Typo="Typo.subtitle2">@meal.Name</MudText>

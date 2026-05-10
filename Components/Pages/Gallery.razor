@@ -1,18 +1,19 @@
 ﻿@page "/gallery"
 @using LittleHelpers.Service
 @rendermode InteractiveServer
-@inject IDatabaseService DatabaseService
+@inject IMealService MealService
 @inject MudBlazor.IDialogService DialogService
+@inject NavigationManager NavigationManager
 
 <MudDialogProvider />
 
-<MudText Typo="Typo.h5" Class="mb-4">Gallery</MudText>
+<MudText Typo="Typo.h5" Class="mb-4"><MudIcon Icon="@Icons.Material.Outlined.Fastfood" Title="Meals" /> Meals <MudIcon Icon="@Icons.Material.Outlined.Fastfood" Title="Meals" /></MudText>
 
 <MudButton Variant="Variant.Filled"
            Color="Color.Primary"
            Class="mb-4"
            OnClick="CreateMeal">
-    Create Image
+    Add a meal idea
 </MudButton>
 
 <MudGrid>
@@ -25,10 +26,7 @@
 </MudGrid>
 
 
-<DetailsDrawer Open="@_drawerOpen"
-               meal="SelectedMeal"
-               OnClose="CloseDrawer"
-               OnEdit="EditMeal" />
+<DetailsDrawer Open="@_drawerOpen" meal="SelectedMeal" OnClose="CloseDrawer" OnEdit="EditMeal" OnDelete="DeleteMeal" />
 
 @code {
 
@@ -41,7 +39,7 @@
 
     protected override void OnInitialized()
     {
-        Meals = DatabaseService.GetAllMealsAsync().Result;
+        Meals = MealService.GetAllMealsAsync().Result;
     }
 
     bool _drawerOpen;
@@ -54,7 +52,7 @@
                 ["Model"] = new Meal()
             };
 
-        var dialog = await DialogService.ShowAsync<MealFormDialog>("Create", parameters);
+        var dialog = await DialogService.ShowAsync<MealFormDialog>("Add a new meal", parameters);
         var result = await dialog.Result;
 
         if (!result.Canceled)
@@ -66,13 +64,28 @@
                 var stream = file.OpenReadStream(5 * 1024 * 1024);
                 var ext = Path.GetExtension(file.Name);
 
-                await DatabaseService.CreateMealAsync(model, stream, ext);
-                Meals = await DatabaseService.GetAllMealsAsync();
+                await MealService.CreateMealAsync(model, stream, ext);
+                Meals = await MealService.GetAllMealsAsync();
             }
             else
             {
 
             }
+        }
+    }
+
+    async Task DeleteMeal(Meal item)
+    {
+        bool? result = await DialogService.ShowMessageBoxAsync(
+            "Warning", 
+            "Delete the meal?", 
+            yesText:"Delete!", cancelText:"Cancel");
+
+        if (result.HasValue && result.Value)
+        {
+            MealService.Delete(item);
+
+            NavigationManager.NavigateTo("/gallery", true);
         }
     }
 
@@ -83,17 +96,34 @@
                 ["Model"] = item
             };
 
-        var dialog = await DialogService.ShowAsync<MealFormDialog>("Edit", parameters);
+        var dialog = await DialogService.ShowAsync<MealFormDialog>("Edit meal", parameters);
         var result = await dialog.Result;
 
         if (!result.Canceled)
         {
-            var updated = (Meal)result.Data;
+            var (model, file) = ((Meal, IBrowserFile?))result.Data;
+            //var updated = (Meal)result.Data;
+            if (file != null)
+            {
+                var stream =
+                    file.OpenReadStream(5 * 1024 * 1024);
 
-            DatabaseService.Update(updated);
-            Meals = DatabaseService.GetAllMealsAsync().Result;
+                var ext =
+                    Path.GetExtension(file.Name);
 
-            SelectedMeal = updated;
+                MealService.Update(
+                    model,
+                    stream,
+                    ext);
+            }
+            else
+            {
+                MealService.Update(model);
+            }
+
+            Meals = MealService.GetAllMealsAsync().Result;
+
+            SelectedMeal = model;
         }
     }
 

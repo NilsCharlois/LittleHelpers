@@ -1,0 +1,58 @@
+﻿@using LittleHelpers.Models
+@inject MudBlazor.IDialogService DialogService
+@rendermode InteractiveServer
+
+<MudPopoverProvider />
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.subtitle2" Class="fw-bold">Project Name</MudText>
+        <MudTextField Label="Name" @bind-Value="Model.Name" Required="true" />
+        <MudDivider Class="my-4" />
+        <MudText Typo="Typo.subtitle2" Class="fw-bold">Description</MudText>
+        <MudTextField Label="Description" @bind-Value="Model.Description" Lines="3" />
+        <MudDivider Class="my-4" />
+        @* <MudText Typo="Typo.subtitle2" Class="fw-bold">I have the fabric?</MudText> *@
+        <MudCheckBox @bind-Value="Model.HasFabric" Label="I have the fabric?" Color="Color.Primary"></MudCheckBox>
+        <MudDivider Class="my-4" />
+        @* <MudText Typo="Typo.subtitle2" Class="fw-bold">It's a kit?</MudText> *@
+        <MudCheckBox @bind-Value="Model.IsKit" Label="It's a kit?" Color="Color.Primary"></MudCheckBox>
+        <MudDivider Class="my-4" />
+        <MudText Typo="Typo.subtitle2" Class="fw-bold">Image</MudText>
+        <InputFile OnChange="OnFileSelected" />
+
+        @if (_fileName != null)
+        {
+            <MudText Typo="Typo.caption">@_fileName</MudText>
+        }
+
+
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudBlazor.IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] public CrossStitchProject Model { get; set; } = new();
+    
+    private IBrowserFile? _file;
+    private string? _fileName;
+
+    void OnFileSelected(InputFileChangeEventArgs e)
+    {
+        _file = e.File;
+        _fileName = _file.Name;
+    }
+
+    async Task Submit()
+    {
+        MudDialog.Close(MudBlazor.DialogResult.Ok((Model, _file)));
+    }
+
+    void Cancel() => MudDialog.Cancel();
+}

@@ -18,6 +18,7 @@ builder.Services.AddDbContext<LittleHelpers.Models.AppContext>(options => option
 builder.Services.AddMudServices();
 builder.Services.AddScoped<IMealService, MealService>();
 builder.Services.AddScoped<IIngredientService, IngredientService>();
+builder.Services.AddScoped<ICrossStitchProjectService, CrossStitchProjectService>();
 
 
 var app = builder.Build();

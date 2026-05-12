@@ -1,0 +1,22 @@
+@using LittleHelpers.Models
+@rendermode InteractiveServer
+
+<MudCard Style="cursor:pointer" @onclick="HandleClick">
+
+    <MudCardMedia Class="rounded-lg" Image="@String.Join('/', new string[] { "Images", crossStitchProject.ImageFilename })" Height="250" Width="250" />
+
+    <MudCardContent>
+        <MudText Typo="Typo.subtitle2">@crossStitchProject.Name</MudText>
+    </MudCardContent>
+
+</MudCard>
+
+@code {
+    [Parameter] public CrossStitchProject crossStitchProject { get; set; } = default!;
+    [Parameter] public EventCallback<CrossStitchProject> OnClick { get; set; }
+
+    private async Task HandleClick()
+    {
+        await OnClick.InvokeAsync(crossStitchProject);
+    }
+}

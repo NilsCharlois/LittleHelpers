@@ -1,0 +1,141 @@
+﻿@page "/crossStitchProjects"
+@using LittleHelpers.Service
+@rendermode InteractiveServer
+@inject ICrossStitchProjectService CrossStitchProjectService
+@inject MudBlazor.IDialogService DialogService
+@inject NavigationManager NavigationManager
+
+<MudDialogProvider />
+
+<MudText Typo="Typo.h5" Class="mb-4">All cross stitch projects</MudText>
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mb-4" OnClick="CreateCrossStitchProject">Add a new cross stitch project</MudButton>
+
+<MudGrid>
+    @foreach (CrossStitchProject crossStitchProject in CrossStitchProjectList)
+    {
+        <MudItem xs="6" sm="4" md="3">
+             <CrossStitchProjectCard crossStitchProject="crossStitchProject" OnClick="@OpenDrawer" />
+        </MudItem>
+    }
+</MudGrid>
+
+
+<CrossStitchProjectDrawer Open="@_drawerOpen" CrossStitchProject="SelectedCrossStitchProject" OnClose="CloseDrawer" OnEdit="EditCrossStitchProject" OnDelete="DeleteCrossStitchProject" />
+
+@code {
+
+    List<CrossStitchProject> CrossStitchProjectList = [];
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await Task.Run(() => { _drawerOpen = false; });
+    }
+
+    protected override void OnInitialized()
+    {
+        CrossStitchProjectList = CrossStitchProjectService.GetAllCrossStitchProjectsAsync().Result;
+    }
+
+    bool _drawerOpen;
+    CrossStitchProject? SelectedCrossStitchProject;
+
+    async Task CreateCrossStitchProject()
+    {
+        var parameters = new MudBlazor.DialogParameters
+            {
+                ["Model"] = new CrossStitchProject()
+            };
+
+        var dialog = await DialogService.ShowAsync<CrossStitchProjectFormDialog>("Add a new cross stitch project", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            var (model, file) = ((CrossStitchProject, IBrowserFile?))result.Data;
+
+            if (file != null && file.ContentType.StartsWith("image/"))
+            {
+                var stream = file.OpenReadStream(5 * 1024 * 1024);
+                var ext = Path.GetExtension(file.Name);
+
+                await CrossStitchProjectService.CreateCrossStitchProjectAsync(model, stream, ext);
+                CrossStitchProjectList = await CrossStitchProjectService.GetAllCrossStitchProjectsAsync();
+            }
+            else
+            {
+
+            }
+        }
+    }
+
+    async Task DeleteCrossStitchProject(CrossStitchProject item)
+    {
+        bool? result = await DialogService.ShowMessageBoxAsync(
+            "Warning", 
+            "Delete the cross stitch project?", 
+            yesText:"Delete!", cancelText:"Cancel");
+
+        if (result.HasValue && result.Value)
+        {
+            CrossStitchProjectService.Delete(item);
+
+            NavigationManager.NavigateTo("/crossStitchProjects", true);
+        }
+    }
+
+    async Task EditCrossStitchProject(CrossStitchProject item)
+    {
+        var parameters = new MudBlazor.DialogParameters
+            {
+                ["Model"] = item
+            };
+
+        var dialog = await DialogService.ShowAsync<CrossStitchProjectFormDialog>("Edit cross stitch project", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            var (model, file) = ((CrossStitchProject, IBrowserFile?))result.Data;
+            //var updated = (Meal)result.Data;
+            if (file != null)
+            {
+                var stream =
+                    file.OpenReadStream(5 * 1024 * 1024);
+
+                var ext =
+                    Path.GetExtension(file.Name);
+
+                CrossStitchProjectService.Update(
+                    model,
+                    stream,
+                    ext);
+            }
+            else
+            {
+                CrossStitchProjectService.Update(model);
+            }
+
+            CrossStitchProjectList = CrossStitchProjectService.GetAllCrossStitchProjectsAsync().Result;
+
+            SelectedCrossStitchProject = model;
+        }
+    }
+
+    void HandleClickMealCard(CrossStitchProject item)
+    {
+        SelectedCrossStitchProject = item;
+        _drawerOpen = true;        
+    }
+
+    void OpenDrawer(CrossStitchProject item)
+    {
+        SelectedCrossStitchProject = item;
+        _drawerOpen = true;
+    }
+
+    void CloseDrawer()
+    {
+        _drawerOpen = false;
+    }
+}

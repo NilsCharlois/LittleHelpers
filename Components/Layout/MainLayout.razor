@@ -1,20 +1,21 @@
 ﻿@inherits LayoutComponentBase
+@inject MudBlazor.IDialogService DialogService
 
 <MudThemeProvider />
-<MudDialogProvider />
 <MudSnackbarProvider />
 
+@* 
 <MudLayout>
 
     <!-- Top bar -->
-    <MudAppBar Elevation="1">
-        <MudText Typo="Typo.h6">Image App</MudText>
+    <MudAppBar Elevation="25">
+        <MudText Typo="Typo.h6">Little Helpers</MudText>
 
         <MudSpacer />
 
-        <MudButton Variant="Variant.Text" Href="/">Home</MudButton>
-        <MudButton Variant="Variant.Text" Href="/gallery">Gallery</MudButton>
-        <MudButton Variant="Variant.Text" Href="/mealList">Meal List</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/gallery">Meals</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/ingredients">Ingredients</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/crossStitchProjects">Cross Stitch Projects</MudButton>
     </MudAppBar>
 
     <!-- Main content -->
@@ -27,5 +28,87 @@
         <a href="." class="reload">Reload</a>
         <span class="dismiss">🗙</span>
     </div>
+</MudLayout> *@
+
+<MudLayout>
+
+    <!-- TOP BAR -->
+    <MudAppBar Elevation="1">
+
+        <!-- Mobile Hamburger -->
+        <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                       Color="Color.Inherit"
+                       Edge="Edge.Start"
+                       OnClick="ToggleDrawer"
+                       Class="d-md-none" />
+
+        <MudText Typo="Typo.h6">
+            Little Helpers
+        </MudText>
+
+        <MudSpacer />
+
+        <!-- Desktop Menu -->
+        <div class="d-none d-md-flex">
+
+            <MudButton Href="/gallery" Color="Color.Inherit">Meals</MudButton>
+            <MudButton Href="/ingredients" Color="Color.Inherit">Ingredients</MudButton>
+            <MudButton Color="Color.Inherit" Href="/crossStitchProjects">Cross Stitch Projects</MudButton>
+        </div>
+
+    </MudAppBar>
+
+    <!-- SIDE DRAWER -->
+    <MudDrawer @bind-Open="_drawerOpen"
+               ClipMode="DrawerClipMode.Always"
+               Breakpoint="Breakpoint.Md"
+               Elevation="1"
+               Variant="@DrawerVariant">
+
+        <MudNavMenu>
+
+            <MudNavLink Href="/gallery"
+                        Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.Filled.Restaurant">
+                Meals
+            </MudNavLink>
+
+            <MudNavLink Href="/ingredients"
+                        Icon="@Icons.Material.Filled.LocalDining">
+                Ingredients
+            </MudNavLink>
+
+        </MudNavMenu>
+
+    </MudDrawer>
+
+    <!-- PAGE CONTENT -->
+    <MudMainContent>
+
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge"
+                      Class="mt-4">
+
+            @Body
+
+        </MudContainer>
+
+    </MudMainContent>
+
 </MudLayout>
 
+@code {
+
+    private bool _drawerOpen = true;
+
+    private DrawerVariant DrawerVariant =>
+        BrowserWidth < 960
+            ? DrawerVariant.Temporary
+            : DrawerVariant.Persistent;
+
+    private int BrowserWidth { get; set; } = 1200;
+
+    void ToggleDrawer()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}

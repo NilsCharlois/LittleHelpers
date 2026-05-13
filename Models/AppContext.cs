@@ -37,10 +37,15 @@ namespace LittleHelpers.Models
                 builder.HasMany(i => i.MealIngredients).WithOne(mi => mi.Ingredient);
                 builder.ToTable("Ingredient");
             });
+            modelBuilder.Entity<CrossStitchProject>(builder =>
+            {
+                builder.ToTable("CrossStitchProject");
+            });
         }
 
         public DbSet<Meal> Meals { get; set; }
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<MealIngredients> MealIngredients { get; set; }
+        public DbSet<CrossStitchProject> CrossStitchProjects { get; set; }
     }
 }

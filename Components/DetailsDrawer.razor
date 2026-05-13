@@ -10,29 +10,45 @@
     {
         <MudPaper Class="pa-4">
 
-            <MudText Typo="Typo.h6">@meal.Name</MudText>
+            <MudText Typo="Typo.subtitle2" Class="fw-bold">Meal Name</MudText>
+            <MudText>@meal.Name</MudText>
 
-            <MudDivider Class="my-2" />
-
-            <MudText>Description: @meal.Description</MudText>
+            <MudDivider Class="my-4" />
+            
+            <MudText Typo="Typo.subtitle2" Class="fw-bold">Description</MudText>
+            <MudText>@meal.Description</MudText>
 
             @if(meal.MealIngredients.Count > 0)
             {
-                <MudText>Ingredients:</MudText>
-                <MudList T="string">
-                    @foreach(MealIngredients mealIngredient in meal.MealIngredients)
+                <MudDivider Class="my-4" />
+                <MudText Typo="Typo.subtitle2" Class="fw-bold">Ingredients</MudText>
+                <div class="mt-2">
+                    @foreach (var mealIngredient in meal.MealIngredients)
                     {
-                        <MudItem>@mealIngredient.Ingredient.Name (qty: @mealIngredient.Quantity)</MudItem>
+                        <MudChip T="string" Class="mr-2 mb-2" Text="@(mealIngredient.Ingredient.Name + " (" + mealIngredient.Quantity + ")")" />
                     }
-                </MudList>
+                </div>
+            }
+            
+            <MudDivider Class="my-4" />
+
+            <MudText Typo="Typo.subtitle2" Class="fw-bold">Air Fryer?</MudText>
+            @if(meal.IsAirFryer)
+            {
+                <MudText>Yes</MudText>
+            }
+            else
+            {
+                <MudText>No</MudText>
             }
 
-            <MudButton Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Class="mt-4"
-                       OnClick="Close">
-                Close
-            </MudButton>
+            <MudDivider Class="my-4" />
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-4 mr-2" OnClick="@(() => OnEdit.InvokeAsync(meal))">Edit</MudButton>
+
+            <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mt-4 mr-2" Onclick="@(() => OnDelete.InvokeAsync(meal))">Delete</MudButton>
+
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-4" OnClick="Close">Close</MudButton>
+
 
         </MudPaper>
     }
@@ -42,6 +58,8 @@
 @code {
     [Parameter] public bool Open { get; set; }
     [Parameter] public Meal? meal { get; set; }
+    [Parameter] public EventCallback<Meal> OnDelete { get; set; }
+    [Parameter] public EventCallback<Meal> OnEdit { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
 
     private async Task Close()

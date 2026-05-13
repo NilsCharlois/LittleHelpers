@@ -1,0 +1,69 @@
+﻿@using LittleHelpers.Models
+
+<MudDrawer Anchor="Anchor.Right"
+           Open="@Open"
+           Elevation="2"
+           Variant="DrawerVariant.Temporary"
+           Width="300px" OverlayAutoClose="true" OpenChanged="Close">
+
+    @if (crossStitchProject != null)
+    {
+        <MudPaper Class="pa-4">
+
+            <MudText Typo="Typo.subtitle2" Class="fw-bold">Meal Name</MudText>
+            <MudText>@crossStitchProject.Name</MudText>
+
+            <MudDivider Class="my-4" />
+            
+            <MudText Typo="Typo.subtitle2" Class="fw-bold">Description</MudText>
+            <MudText>@crossStitchProject.Description</MudText>
+
+            <MudDivider Class="my-4" />
+
+            <MudText Typo="Typo.subtitle2" Class="fw-bold">Has the fabric?</MudText>
+            @if(crossStitchProject.HasFabric)
+            {
+                <MudText>Yes</MudText>
+            }
+            else
+            {
+                <MudText>No</MudText>
+            }
+
+            <MudDivider Class="my-4" />
+
+            <MudText Typo="Typo.subtitle2" Class="fw-bold">Is a kit?</MudText>
+            @if(crossStitchProject.IsKit)
+            {
+                <MudText>Yes</MudText>
+            }
+            else
+            {
+                <MudText>No</MudText>
+            }
+
+            <MudDivider Class="my-4" />
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-4 mr-2" OnClick="@(() => OnEdit.InvokeAsync(crossStitchProject))">Edit</MudButton>
+
+            <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mt-4 mr-2" Onclick="@(() => OnDelete.InvokeAsync(crossStitchProject))">Delete</MudButton>
+
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-4" OnClick="Close">Close</MudButton>
+
+
+        </MudPaper>
+    }
+
+</MudDrawer>
+
+@code {
+    [Parameter] public bool Open { get; set; }
+    [Parameter] public CrossStitchProject? crossStitchProject { get; set; }
+    [Parameter] public EventCallback<CrossStitchProject> OnDelete { get; set; }
+    [Parameter] public EventCallback<CrossStitchProject> OnEdit { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private async Task Close()
+    {
+        await OnClose.InvokeAsync();
+    }
+}

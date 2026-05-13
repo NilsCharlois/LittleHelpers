@@ -1,0 +1,54 @@
+﻿@using LittleHelpers.Models
+@inject MudBlazor.IDialogService DialogService
+@rendermode InteractiveServer
+
+<MudPopoverProvider />
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.subtitle2" Class="fw-bold">Meal Name</MudText>
+        <MudTextField Label="Name" @bind-Value="Model.Name" Required="true" />
+        <MudText Typo="Typo.subtitle2" Class="fw-bold">Description</MudText>
+        <MudTextField Label="Description" @bind-Value="Model.Description" Lines="3" />
+        <MudText Typo="Typo.subtitle2" Class="fw-bold">Uses Air Fryer</MudText>
+        <MudCheckBox @bind-Value="Model.IsAirFryer" Label="Air Fryer" Color="Color.Primary"></MudCheckBox>
+        <MudText Typo="Typo.subtitle2" Class="fw-bold">Ingredient List</MudText>
+        <IngredientEditor MealIngredients="Model.MealIngredients" />
+        <MudText Typo="Typo.subtitle2" Class="fw-bold">Image</MudText>
+        <InputFile OnChange="OnFileSelected" />
+
+        @if (_fileName != null)
+        {
+            <MudText Typo="Typo.caption">@_fileName</MudText>
+        }
+
+
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudBlazor.IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] public Meal Model { get; set; } = new();
+    
+    private IBrowserFile? _file;
+    private string? _fileName;
+
+    void OnFileSelected(InputFileChangeEventArgs e)
+    {
+        _file = e.File;
+        _fileName = _file.Name;
+    }
+
+    async Task Submit()
+    {
+        MudDialog.Close(MudBlazor.DialogResult.Ok((Model, _file)));
+    }
+
+    void Cancel() => MudDialog.Cancel();
+}

@@ -16,7 +16,9 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddDbContext<LittleHelpers.Models.AppContext>(options => options.UseSqlite(connectionString).EnableDetailedErrors(), ServiceLifetime.Transient);
 //builder.Services.AddBlazorBootstrap();
 builder.Services.AddMudServices();
-builder.Services.AddScoped<IDatabaseService, DatabaseService>();
+builder.Services.AddScoped<IMealService, MealService>();
+builder.Services.AddScoped<IIngredientService, IngredientService>();
+builder.Services.AddScoped<ICrossStitchProjectService, CrossStitchProjectService>();
 
 
 var app = builder.Build();

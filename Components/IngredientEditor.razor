@@ -1,0 +1,110 @@
+﻿@using LittleHelpers.Models
+@inject IIngredientService IngredientService
+
+<MudAutocomplete T="Ingredient"
+                 Label="Add ingredient"
+                 SearchFunc="SearchIngredients"
+                 ToStringFunc="@(i => i?.Name ?? string.Empty)"
+                 ValueChanged="OnIngredientSelected"
+                 Dense="true"
+                 ResetValueOnEmptyText="true" />
+
+<MudTextField Label="Create ingredient"
+              @bind-Value="_newIngredient"
+              Dense="true"
+              Class="mt-2" />
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary"
+           Size="Size.Small"
+           Class="mt-2"
+           OnClick="CreateIngredient">
+    Create Ingredient
+</MudButton>
+
+<div class="mt-4">
+
+    @foreach (var mealIngredient in MealIngredients)
+    {
+        <MudPaper Class="pa-2 mb-2 d-flex align-center">
+
+            <MudText Class="mr-4">
+                @mealIngredient.Ingredient.Name
+            </MudText>
+
+            <MudTextField T="string"
+                          Label="Quantity"
+                          Value="@mealIngredient.Quantity"
+                          ValueChanged="@(v => mealIngredient.Quantity = v)"
+                          Dense="true"
+                          Class="mr-2" />
+
+            <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                           Color="Color.Error"
+                           OnClick="() => RemoveIngredient(mealIngredient)" />
+
+        </MudPaper>
+    }
+
+</div>
+
+@code {
+    [Parameter]
+    public List<MealIngredients> MealIngredients { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<List<MealIngredients>> MealIngredientsChanged { get; set; }
+
+    private string _newIngredient = "";
+
+    private async Task<IEnumerable<Ingredient>> SearchIngredients(string value, CancellationToken token)
+    {
+        return await IngredientService.SearchIngredients(value);
+    }
+
+    private async Task OnIngredientSelected(Ingredient? ingredient)
+    {
+        if (ingredient == null)
+            return;
+
+        if (MealIngredients.Any(x => x.IngredientId == ingredient.Id))
+            return;
+
+        MealIngredients.Add(new MealIngredients
+        {
+            IngredientId = ingredient.Id,
+            Ingredient = ingredient,
+            Quantity = ""
+        });
+
+        await MealIngredientsChanged.InvokeAsync(MealIngredients);
+    }
+
+    private async Task CreateIngredient()
+    {
+        if (string.IsNullOrWhiteSpace(_newIngredient))
+            return;
+
+        var ingredient = await IngredientService.GetOrCreate(_newIngredient);
+
+        if (!MealIngredients.Any(x => x.IngredientId == ingredient.Id))
+        {
+            MealIngredients.Add(new MealIngredients
+            {
+                IngredientId = ingredient.Id,
+                Ingredient = ingredient,
+                Quantity = ""
+            });
+
+            await MealIngredientsChanged.InvokeAsync(MealIngredients);
+        }
+
+        _newIngredient = "";
+    }
+
+    private async Task RemoveIngredient(MealIngredients mealIngredient)
+    {
+        MealIngredients.Remove(mealIngredient);
+
+        await MealIngredientsChanged.InvokeAsync(MealIngredients);
+    }
+}

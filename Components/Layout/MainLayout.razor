@@ -4,82 +4,19 @@
 <MudThemeProvider />
 <MudSnackbarProvider />
 
-@* 
 <MudLayout>
 
-    <!-- Top bar -->
-    <MudAppBar Elevation="25">
-        <MudText Typo="Typo.h6">Little Helpers</MudText>
-
-        <MudSpacer />
-
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/gallery">Meals</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/ingredients">Ingredients</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/crossStitchProjects">Cross Stitch Projects</MudButton>
+    <MudAppBar>
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+        Little Helpers
     </MudAppBar>
 
-    <!-- Main content -->
-    <MudMainContent Class="pa-4 mt-16">
-        @Body
-    </MudMainContent>
-
-    <div id="blazor-error-ui" data-nosnippet>
-        An unhandled error has occurred.
-        <a href="." class="reload">Reload</a>
-        <span class="dismiss">🗙</span>
-    </div>
-</MudLayout> *@
-
-<MudLayout>
-
-    <!-- TOP BAR -->
-    <MudAppBar Elevation="1">
-
-        <!-- Mobile Hamburger -->
-        <MudIconButton Icon="@Icons.Material.Filled.Menu"
-                       Color="Color.Inherit"
-                       Edge="Edge.Start"
-                       OnClick="ToggleDrawer"
-                       Class="d-md-none" />
-
-        <MudText Typo="Typo.h6">
-            Little Helpers
-        </MudText>
-
-        <MudSpacer />
-
-        <!-- Desktop Menu -->
-        <div class="d-none d-md-flex">
-
-            <MudButton Href="/gallery" Color="Color.Inherit">Meals</MudButton>
-            <MudButton Href="/ingredients" Color="Color.Inherit">Ingredients</MudButton>
-            <MudButton Color="Color.Inherit" Href="/crossStitchProjects">Cross Stitch Projects</MudButton>
-        </div>
-
-    </MudAppBar>
-
-    <!-- SIDE DRAWER -->
-    <MudDrawer @bind-Open="_drawerOpen"
-               ClipMode="DrawerClipMode.Always"
-               Breakpoint="Breakpoint.Md"
-               Elevation="1"
-               Variant="@DrawerVariant">
-
-        <MudNavMenu>
-
-            <MudNavLink Href="/gallery"
-                        Match="NavLinkMatch.All"
-                        Icon="@Icons.Material.Filled.Restaurant">
-                Meals
-            </MudNavLink>
-
-            <MudNavLink Href="/ingredients"
-                        Icon="@Icons.Material.Filled.LocalDining">
-                Ingredients
-            </MudNavLink>
-
-        </MudNavMenu>
-
+    
+    <MudDrawer @bind-Open="@_open" Elevation="1" Variant="@DrawerVariant.Temporary" Anchor="Anchor.Left" OverlayAutoClose="true">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">Little Helpers</MudText>
+        </MudDrawerHeader>
+        <NavMenu />  
     </MudDrawer>
 
     <!-- PAGE CONTENT -->
@@ -87,9 +24,7 @@
 
         <MudContainer MaxWidth="MaxWidth.ExtraLarge"
                       Class="mt-4">
-
             @Body
-
         </MudContainer>
 
     </MudMainContent>
@@ -98,17 +33,10 @@
 
 @code {
 
-    private bool _drawerOpen = true;
+    private bool _open = true;
 
-    private DrawerVariant DrawerVariant =>
-        BrowserWidth < 960
-            ? DrawerVariant.Temporary
-            : DrawerVariant.Persistent;
-
-    private int BrowserWidth { get; set; } = 1200;
-
-    void ToggleDrawer()
+    private void ToggleDrawer()
     {
-        _drawerOpen = !_drawerOpen;
+        _open = !_open;
     }
 }

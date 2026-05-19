@@ -3,6 +3,7 @@
 @using LittleHelpers.Service
 @rendermode InteractiveServer
 @inject IDialogService DialogService
+@inject IMealPlannerService MealPlannerService
 <MudDialogProvider />
 <MudPopoverProvider />
 
@@ -33,8 +34,19 @@
 </MudMenu>
 
 @code{
-    //[Inject]
-    //private IDialogService DialogService { get; set; }
+    private List<CalendarItem> _events = [];
+
+    protected override Task OnInitializedAsync()
+    {
+        List<MealsForDay> mealsForDays = MealPlannerService.GetAllPlannedDays();
+        _events = mealsForDays.Select(p => new CalendarItem(){
+            AllDay = true,
+            Start = DateTime.ParseExact(p.Date, "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture),
+            End = DateTime.ParseExact(p.Date, "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture),
+            Text = "Test"
+        }).ToList();
+        return base.OnInitializedAsync();
+    }
 
     private Task CellClicked(DateTime dateTime)
     {
@@ -72,19 +84,19 @@
         return DialogService.ShowMessageBoxAsync("Cell Range Selected", $"Start: {dateRange.Start?.ToString(Thread.CurrentThread.CurrentCulture)} End: {dateRange.End?.ToString(Thread.CurrentThread.CurrentCulture)}");
     }
 
-    private List<CalendarItem> _events = new()
-    {
-        new CalendarItem
-        {
-            Start = DateTime.Today.AddHours(10),
-            End = DateTime.Today.AddHours(11),
-            Text = "Event today"
-        },
-        new CalendarItem
-        {
-            Start = DateTime.Today.AddDays(1).AddHours(11),
-            End = DateTime.Today.AddDays(1).AddHours(12.5),
-            Text = "Event tomorrow",
-        }
-    };
+    // private List<CalendarItem> _events = new()
+    // {
+    //     new CalendarItem
+    //     {
+    //         Start = DateTime.Today.AddHours(10),
+    //         End = DateTime.Today.AddHours(11),
+    //         Text = "Event today"
+    //     },
+    //     new CalendarItem
+    //     {
+    //         Start = DateTime.Today.AddDays(1).AddHours(11),
+    //         End = DateTime.Today.AddDays(1).AddHours(12.5),
+    //         Text = "Event tomorrow",
+    //     }
+    // };
 }

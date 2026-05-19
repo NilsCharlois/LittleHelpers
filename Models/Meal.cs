@@ -8,6 +8,7 @@
         public string ImageName { get; set; } = string.Empty;
         public bool IsAirFryer { get; set; } = false;
         public List<MealIngredients> MealIngredients { get; set; } = new();
-
+        public List<MealsForDay> DinnerMeals { get; set; } = new();
+        public List<MealsForDay> LunchMeals { get; set; } = new();
     }
 }

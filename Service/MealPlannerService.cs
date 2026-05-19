@@ -13,12 +13,12 @@ namespace LittleHelpers.Service
 
         public List<MealsForDay> GetAllPlannedDays()
         {
-            throw new NotImplementedException();
+            return _context.MealsForDays.ToList();
         }
 
-        public List<MealsForDay> GetMealsPlannedForDay(DateTime date)
+        public List<MealsForDay> GetMealsPlannedForDay(string date)
         {
-            throw new NotImplementedException();
+            return _context.MealsForDays.Where(md=>md.Date.Equals(date)) .ToList();
         }
     }
 }

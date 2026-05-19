@@ -5,6 +5,6 @@ namespace LittleHelpers.Service
     public interface IMealPlannerService
     {
         public List<MealsForDay> GetAllPlannedDays();
-        public List<MealsForDay> GetMealsPlannedForDay(DateTime date);
+        public List<MealsForDay> GetMealsPlannedForDay(string date);
     }
 }

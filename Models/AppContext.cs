@@ -27,6 +27,18 @@ namespace LittleHelpers.Models
                     builder.Property(mi => mi.Quantity).IsRequired();
                     builder.HasKey(mi=>mi.MealIngredientId);
                 });
+
+            modelBuilder.Entity<MealsForDay>(
+                builder =>
+                {
+                    builder.HasOne(md => md.DinnerMeal).WithMany(i => i.DinnerMeals).HasForeignKey(mi => mi.DinnerMealId).IsRequired(false);
+                    builder.HasOne(md => md.LunchMeal).WithMany(i => i.LunchMeals).HasForeignKey(mi => mi.LunchMealId).IsRequired(false);
+                    builder.Property(md => md.Date).IsRequired();
+                    builder.HasKey(mi => mi.MealsForDayId);
+
+                    builder.ToTable("MealsForDay");
+                });
+
             modelBuilder.Entity<Meal>(builder =>
             {
                 builder.HasMany(m => m.MealIngredients).WithOne(mi => mi.Meal);
@@ -47,5 +59,6 @@ namespace LittleHelpers.Models
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<MealIngredients> MealIngredients { get; set; }
         public DbSet<CrossStitchProject> CrossStitchProjects { get; set; }
+        public DbSet<MealsForDay> MealsForDays { get; set; }
     }
 }

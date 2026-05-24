@@ -105,16 +105,9 @@
             //var updated = (Meal)result.Data;
             if (file != null)
             {
-                var stream =
-                    file.OpenReadStream(5 * 1024 * 1024);
-
-                var ext =
-                    Path.GetExtension(file.Name);
-
-                MealService.Update(
-                    model,
-                    stream,
-                    ext);
+                var stream = file.OpenReadStream(5 * 1024 * 1024);
+                var ext = Path.GetExtension(file.Name);
+                MealService.Update(model, stream, ext);
             }
             else
             {

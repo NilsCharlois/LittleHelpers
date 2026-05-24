@@ -11,6 +11,9 @@ namespace LittleHelpers.Models
         public int? DinnerMealId { get; set; }
         public virtual Meal? DinnerMeal { get; set; }
 
+        public int? SnackMealId { get; set; }
+        public virtual Meal? SnackMeal { get; set; }
+
         public string Date { get; set; } // format yyyy/MM/dd
     }
 }

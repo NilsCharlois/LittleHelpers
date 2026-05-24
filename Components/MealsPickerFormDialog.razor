@@ -1,0 +1,35 @@
+﻿@using LittleHelpers.Models
+@inject MudBlazor.IDialogService DialogService
+@rendermode InteractiveServer
+
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.subtitle2" Class="fw-bold">Lunch Meal</MudText>
+        <MudTextField Label="Name" @bind-Value="Model.LunchMeal.Description" Required="false" />
+        <MudDivider Class="my-4" />
+        <MudText Typo="Typo.subtitle2" Class="fw-bold">Dinner Meal</MudText>
+        <MudTextField Label="Name" @bind-Value="Model.SnackMeal.Description" Required="false" />
+        <MudDivider Class="my-4" />
+        <MudText Typo="Typo.subtitle2" Class="fw-bold">Snack Meal</MudText>
+        <MudTextField Label="Name" @bind-Value="Model.DinnerMeal.Description" Required="false" />
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudBlazor.IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] public MealsForDay? Model { get; set; } = new();
+
+    async Task Submit()
+    {
+        MudDialog.Close(MudBlazor.DialogResult.Ok((Model)));
+    }
+
+    void Cancel() => MudDialog.Cancel();
+}

@@ -5,6 +5,8 @@ namespace LittleHelpers.Service
     public interface IMealPlannerService
     {
         public List<MealsForDay> GetAllPlannedDays();
-        public List<MealsForDay> GetMealsPlannedForDay(string date);
+        public MealsForDay GetMealsPlannedForDay(string date);
+        public Task<MealsForDay> CreateMealsForDayAsync(MealsForDay model);
+        public void Update(MealsForDay model);
     }
 }

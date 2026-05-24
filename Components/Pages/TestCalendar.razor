@@ -4,6 +4,7 @@
 @rendermode InteractiveServer
 @inject IDialogService DialogService
 @inject IMealPlannerService MealPlannerService
+
 <MudDialogProvider />
 <MudPopoverProvider />
 
@@ -14,7 +15,7 @@
     ItemClicked="ItemClicked"
     CellRangeSelected="CellRangeSelected"
     CellContextMenuClicked="OpenMenuContent"
-    DayTimeInterval="CalendarTimeInterval.Minutes15"
+    DayTimeInterval="CalendarTimeInterval.Minutes180"
 >
     <MonthTemplate>
         <div class="d-flex gap-1">
@@ -48,9 +49,25 @@
         return base.OnInitializedAsync();
     }
 
-    private Task CellClicked(DateTime dateTime)
+    private async void CellClicked(DateTime dateTime)
     {
-        return DialogService.ShowMessageBoxAsync("Cell Clicked", dateTime.ToString(Thread.CurrentThread.CurrentCulture));
+        string date = dateTime.ToString("yyyy/MM/dd");
+        MealsForDay mealsForDay = MealPlannerService.GetMealsPlannedForDay(date);
+        var parameters = new MudBlazor.DialogParameters
+            {
+            ["Model"] = mealsForDay
+            };
+
+        var dialog = await DialogService.ShowAsync<MealsPickerFormDialog>("Pick meals", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            var model = (MealsForDay)result.Data;
+
+            MealPlannerService.Update(model);
+        }
+
     }
 
     private Task ItemClicked(CalendarItem item)
@@ -72,7 +89,6 @@
         return DialogService.ShowMessageBoxAsync("Adding an event", _contextMenuDate.Value.ToString(Thread.CurrentThread.CurrentCulture));
     }
 
-
     private Task RemoveAllEvents()
     {
         return DialogService.ShowMessageBoxAsync("Removing all events", _contextMenuDate.Value.ToString(Thread.CurrentThread.CurrentCulture));
@@ -81,22 +97,11 @@
 
     private Task CellRangeSelected(MudBlazor.DateRange dateRange)
     {
-        return DialogService.ShowMessageBoxAsync("Cell Range Selected", $"Start: {dateRange.Start?.ToString(Thread.CurrentThread.CurrentCulture)} End: {dateRange.End?.ToString(Thread.CurrentThread.CurrentCulture)}");
+        TimeSpan timeSpan = dateRange.End.Value.Subtract(dateRange.Start.Value);
+        if(timeSpan >  new TimeSpan(24, 0, 0))
+        {
+            return DialogService.ShowMessageBoxAsync("Cell Range Selected", $"Start: {dateRange.Start?.ToString(Thread.CurrentThread.CurrentCulture)} End: {dateRange.End?.ToString(Thread.CurrentThread.CurrentCulture)}");
+        }
+        return Task.CompletedTask;
     }
-
-    // private List<CalendarItem> _events = new()
-    // {
-    //     new CalendarItem
-    //     {
-    //         Start = DateTime.Today.AddHours(10),
-    //         End = DateTime.Today.AddHours(11),
-    //         Text = "Event today"
-    //     },
-    //     new CalendarItem
-    //     {
-    //         Start = DateTime.Today.AddDays(1).AddHours(11),
-    //         End = DateTime.Today.AddDays(1).AddHours(12.5),
-    //         Text = "Event tomorrow",
-    //     }
-    // };
 }

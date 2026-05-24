@@ -16,9 +16,32 @@ namespace LittleHelpers.Service
             return _context.MealsForDays.ToList();
         }
 
-        public List<MealsForDay> GetMealsPlannedForDay(string date)
+        public MealsForDay GetMealsPlannedForDay(string date)
         {
-            return _context.MealsForDays.Where(md=>md.Date.Equals(date)) .ToList();
+            return _context.MealsForDays.SingleOrDefault(md=>md.Date.Equals(date));
+        }
+
+        public async Task<MealsForDay> CreateMealsForDayAsync(MealsForDay model)
+        {
+            _context.MealsForDays.Add(model);
+            await _context.SaveChangesAsync();
+            return model;
+        }
+
+        public async void Update(MealsForDay model)
+        {
+            var existing = _context.MealsForDays.FirstOrDefault(x => x.MealsForDayId == model.MealsForDayId);
+
+            if (existing == null)
+                return;
+
+            existing.Date = model.Date;
+            existing.LunchMealId = model.LunchMealId;
+            existing.SnackMealId = model.SnackMealId;
+            existing.DinnerMealId = model.DinnerMealId;
+
+                _context.SaveChanges();
+            
         }
     }
 }

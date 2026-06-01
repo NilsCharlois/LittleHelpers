@@ -19,6 +19,18 @@ namespace LittleHelpers.Service
             return context.Meals.Include(m => m.MealIngredients).ThenInclude(x => x.Ingredient).ToListAsync();
         }
 
+        public async Task<List<Meal>> SearchMeals(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return await context.Meals.OrderBy(i => i.Name).Take(20).ToListAsync();
+            }
+
+            return await context.Meals.Where(i => i.Name.Contains(value)).OrderBy(i => i.Name).Take(20).ToListAsync();
+        }
+
+        
+
         public async Task<Meal> CreateMealAsync(Meal item, Stream fileStream, string extension)
         {
             var uploadsFolder = Path.Combine(_env.WebRootPath, "Images");

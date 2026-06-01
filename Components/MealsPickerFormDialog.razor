@@ -1,30 +1,81 @@
 ﻿@using LittleHelpers.Models
 @inject MudBlazor.IDialogService DialogService
+@inject IMealService MealService
+@inject IMealPlannerService PlannerService
 @rendermode InteractiveServer
 
+<MudDialogProvider />
 
 <MudDialog>
     <DialogContent>
         <MudText Typo="Typo.subtitle2" Class="fw-bold">Lunch Meal</MudText>
-        <MudTextField Label="Name" @bind-Value="Model.LunchMeal.Description" Required="false" />
-        <MudDivider Class="my-4" />
-        <MudText Typo="Typo.subtitle2" Class="fw-bold">Dinner Meal</MudText>
-        <MudTextField Label="Name" @bind-Value="Model.SnackMeal.Description" Required="false" />
+        <MudAutocomplete T="Meal"
+                         Label="Lunch Meal"
+                         SearchFunc="SearchMeal"
+                         ToStringFunc="@(i => i?.Name ?? string.Empty)"
+                         ValueChanged="OnLunchSelected"
+                         Dense="true"
+                         ResetValueOnEmptyText="true" />
+
+        @if(Model.LunchMealId == null)
+        {
+            <MudTextField Label="Name" @bind-Value="LunchMealDescription" Required="false" />
+        }
+        else
+        {
+            <MudTextField Label="Name" @bind-Value="Model.LunchMeal.Description" Required="false" />
+        }
         <MudDivider Class="my-4" />
         <MudText Typo="Typo.subtitle2" Class="fw-bold">Snack Meal</MudText>
-        <MudTextField Label="Name" @bind-Value="Model.DinnerMeal.Description" Required="false" />
+        @if (Model.SnackMealId == null)
+        {
+            <MudTextField Label="Name" @bind-Value="SnackMealDescription" Required="false" />
+        }
+        else
+        {
+            <MudTextField Label="Name" @bind-Value="Model.SnackMeal.Description" Required="false" />
+        }
+        <MudDivider Class="my-4" />
+        <MudText Typo="Typo.subtitle2" Class="fw-bold">Snack Meal</MudText>
+        @if (Model.DinnerMealId == null)
+        {
+            <MudTextField Label="Name" @bind-Value="DinnerMealDescription" Required="false" />
+        }
+        else
+        {
+            <MudTextField Label="Name" @bind-Value="Model.DinnerMeal.Description" Required="false" />
+        }
     </DialogContent>
 
     <DialogActions>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit">Save</MudButton>
+        <MudButton OnClick="Cancel">Close</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
     [CascadingParameter] MudBlazor.IMudDialogInstance MudDialog { get; set; } = default!;
 
-    [Parameter] public MealsForDay? Model { get; set; } = new();
+    [Parameter] public MealsForDay Model { get; set; } = new();
+
+    private string LunchMealDescription = string.Empty;
+    private string SnackMealDescription = string.Empty;
+    private string DinnerMealDescription = string.Empty;
+
+    private async Task<IEnumerable<Meal>> SearchMeal(string value, CancellationToken token)
+    {
+        return await MealService.SearchMeals(value);
+    }
+
+    private void OnLunchSelected(Meal? meal)
+    {
+        if (meal == null)
+            return;
+
+        
+        Model.LunchMeal = meal;
+        PlannerService.Update(Model);
+    }
+
 
     async Task Submit()
     {

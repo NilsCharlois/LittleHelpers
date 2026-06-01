@@ -39,20 +39,49 @@
 
     protected override Task OnInitializedAsync()
     {
-        List<MealsForDay> mealsForDays = MealPlannerService.GetAllPlannedDays();
-        _events = mealsForDays.Select(p => new CalendarItem(){
+        LoadEvents();
+
+        return base.OnInitializedAsync();
+    }
+
+    private void LoadEvents()
+    {
+        _events.Clear();
+        _events.AddRange(MealPlannerService.GetAllPlannedLunches()
+        .Select(p => new CalendarItem()
+        {
             AllDay = true,
             Start = DateTime.ParseExact(p.Date, "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture),
             End = DateTime.ParseExact(p.Date, "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture),
-            Text = "Test"
-        }).ToList();
-        return base.OnInitializedAsync();
+            Text = p.LunchMeal.Name
+        }).ToList());
+        _events.AddRange(MealPlannerService.GetAllPlannedSnacks()
+        .Select(p => new CalendarItem()
+        {
+            AllDay = true,
+            Start = DateTime.ParseExact(p.Date, "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture),
+            End = DateTime.ParseExact(p.Date, "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture),
+            Text = p.SnackMeal.Name
+        }).ToList());
+        _events.AddRange(MealPlannerService.GetAllPlannedDinners()
+        .Select(p => new CalendarItem()
+        {
+            AllDay = true,
+            Start = DateTime.ParseExact(p.Date, "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture),
+            End = DateTime.ParseExact(p.Date, "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture),
+            Text = p.DinnerMeal.Name
+        }).ToList());
     }
 
     private async void CellClicked(DateTime dateTime)
     {
         string date = dateTime.ToString("yyyy/MM/dd");
         MealsForDay mealsForDay = MealPlannerService.GetMealsPlannedForDay(date);
+        if(mealsForDay == null)
+        {
+            mealsForDay = new MealsForDay() { Date = date };
+            MealPlannerService.CreateMealsForDay(mealsForDay);
+        }
         var parameters = new MudBlazor.DialogParameters
             {
             ["Model"] = mealsForDay
@@ -63,9 +92,8 @@
 
         if (!result.Canceled)
         {
-            var model = (MealsForDay)result.Data;
-
-            MealPlannerService.Update(model);
+            LoadEvents();
+            StateHasChanged();
         }
 
     }
@@ -91,7 +119,13 @@
 
     private Task RemoveAllEvents()
     {
-        return DialogService.ShowMessageBoxAsync("Removing all events", _contextMenuDate.Value.ToString(Thread.CurrentThread.CurrentCulture));
+        string date = _contextMenuDate.Value.ToString("yyyy/MM/dd");
+        MealPlannerService.RemoveAllMealsForDay(date);
+
+        LoadEvents();
+        StateHasChanged();
+
+        return Task.CompletedTask;
     }
 
 

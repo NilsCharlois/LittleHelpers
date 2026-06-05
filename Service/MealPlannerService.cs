@@ -48,7 +48,7 @@ namespace LittleHelpers.Service
 
         public List<MealsForDay> GetAllPlannedDays()
         {
-            return _context.MealsForDays
+            return _context.MealsForDays.AsNoTracking()
                 .Include(m=>m.LunchMeal)
                 .Include(m=>m.SnackMeal)
                 .Include(m=>m.DinnerMeal)
@@ -58,7 +58,7 @@ namespace LittleHelpers.Service
 
         public MealsForDay GetMealsPlannedForDay(string date)
         {
-            return _context.MealsForDays
+            return _context.MealsForDays.AsNoTracking()
                 .Include(m => m.LunchMeal)
                 .Include(m => m.SnackMeal)
                 .Include(m => m.DinnerMeal)
@@ -80,11 +80,11 @@ namespace LittleHelpers.Service
 
             existing.Date = model.Date;
             existing.LunchMealId = model.LunchMealId;
-            existing.LunchMeal = model.LunchMeal;
+            //existing.LunchMeal = model.LunchMeal;
             existing.SnackMealId = model.SnackMealId;
-            existing.SnackMeal = model.SnackMeal;
+            //existing.SnackMeal = model.SnackMeal;
             existing.DinnerMealId = model.DinnerMealId;
-            existing.DinnerMeal = model.DinnerMeal;
+            //existing.DinnerMeal = model.DinnerMeal;
 
             _context.SaveChanges();
         }

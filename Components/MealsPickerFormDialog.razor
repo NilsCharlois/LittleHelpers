@@ -71,7 +71,7 @@
         if (meal == null)
             return;
 
-        
+        Model.LunchMealId = meal.Id;
         Model.LunchMeal = meal;
         PlannerService.Update(Model);
     }

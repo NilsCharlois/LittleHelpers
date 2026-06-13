@@ -18,7 +18,7 @@ namespace LittleHelpers.Service
                 return await _context.Ingredients.OrderBy(i => i.Name).Take(20).ToListAsync();
             }
 
-            return await _context.Ingredients.Where(i => i.Name.Contains(value)).OrderBy(i => i.Name).Take(20).ToListAsync();
+            return await _context.Ingredients.Where(i => i.Name.ToLower().Contains(value.ToLower())).OrderBy(i => i.Name).Take(20).ToListAsync();
         }
 
         public async Task<List<Ingredient>> GetAll()

@@ -90,9 +90,9 @@
         var dialog = await DialogService.ShowAsync<MealsPickerFormDialog>("Pick meals", parameters);
         var result = await dialog.Result;
 
-            LoadEvents();
-            StateHasChanged();
-        
+        LoadEvents();
+        StateHasChanged();
+
 
     }
 
@@ -129,10 +129,35 @@
 
     private Task CellRangeSelected(MudBlazor.DateRange dateRange)
     {
-        TimeSpan timeSpan = dateRange.End.Value.Subtract(dateRange.Start.Value);
-        if(timeSpan >  new TimeSpan(24, 0, 0))
+        DateTime start = dateRange.Start.Value;
+        DateTime end = dateRange.End.Value;
+        TimeSpan timeSpan = end.Subtract(start);
+        List<string> allMeals = [];
+        MealsForDay mealsForDay;
+        if(timeSpan >  new TimeSpan(24, 0, 0)) // make sure there's at least 2 days selected
         {
-            return DialogService.ShowMessageBoxAsync("Cell Range Selected", $"Start: {dateRange.Start?.ToString(Thread.CurrentThread.CurrentCulture)} End: {dateRange.End?.ToString(Thread.CurrentThread.CurrentCulture)}");
+            while(start < end)
+            {
+                mealsForDay = MealPlannerService.GetMealsPlannedForDay(start.ToString("yyyy/MM/dd"));
+                start = start.AddDays(1);
+                if (mealsForDay != null)
+                {
+                    if (mealsForDay.LunchMeal != null)
+                    {
+                        allMeals.Add(mealsForDay.LunchMeal?.Name);
+                    }
+                    if (mealsForDay.SnackMeal != null)
+                    {
+                        allMeals.Add(mealsForDay.SnackMeal?.Name);
+                    }
+                    if(mealsForDay.DinnerMeal != null)
+                    {
+                        allMeals.Add(mealsForDay.DinnerMeal?.Name);                        
+                    }
+                }
+            }
+            return DialogService.ShowMessageBoxAsync("Cell Range Selected",
+            $"{string.Join(",", allMeals)}");
         }
         return Task.CompletedTask;
     }

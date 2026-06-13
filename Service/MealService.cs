@@ -1,5 +1,6 @@
 ﻿using LittleHelpers.Models;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace LittleHelpers.Service
 {
@@ -16,7 +17,7 @@ namespace LittleHelpers.Service
 
         public Task<List<Meal>> GetAllMealsAsync()
         {
-            return context.Meals.Include(m => m.MealIngredients).ThenInclude(x => x.Ingredient).ToListAsync();
+            return context.Meals.AsNoTracking().Include(m => m.MealIngredients).ThenInclude(x => x.Ingredient).ToListAsync();
         }
 
         public async Task<List<Meal>> SearchMeals(string value)
@@ -28,8 +29,6 @@ namespace LittleHelpers.Service
 
             return await context.Meals.Where(i => i.Name.Contains(value)).OrderBy(i => i.Name).Take(20).ToListAsync();
         }
-
-        
 
         public async Task<Meal> CreateMealAsync(Meal item, Stream fileStream, string extension)
         {
@@ -50,15 +49,25 @@ namespace LittleHelpers.Service
 
         public async void Update(Meal meal, Stream? newFileStream = null, string? extension = null)
         {
-            var existing = context.Meals.FirstOrDefault(x => x.Id == meal.Id);
+            var existing = context.Meals.AsNoTracking().Include(x=>x.MealIngredients).FirstOrDefault(x => x.Id == meal.Id);
 
             if (existing == null)
                 return;
 
             existing.Name = meal.Name;
             existing.Description = meal.Description;
-            existing.MealIngredients = meal.MealIngredients;
             existing.IsAirFryer = meal.IsAirFryer;
+
+            context.MealIngredients.RemoveRange(existing.MealIngredients);
+
+            existing.MealIngredients = meal.MealIngredients
+    .Select(x => new MealIngredients
+    {
+        MealId = existing.Id,
+        IngredientId = x.IngredientId,
+        Quantity = x.Quantity
+    })
+    .ToList();
 
             // New image uploaded
             if (newFileStream != null && extension != null)

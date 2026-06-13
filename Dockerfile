@@ -10,4 +10,8 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
 COPY --from=build /out .
 
+# Create folders for persistent data
+RUN mkdir -p /app/data /app/images
+
+EXPOSE 9999
 ENTRYPOINT ["dotnet", "LittleHelpers.dll"]

@@ -22,4 +22,10 @@
     <PackageReference Include="MudBlazor" Version="9.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="LittleHelpers.sqlite3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
